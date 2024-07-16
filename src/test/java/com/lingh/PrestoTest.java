@@ -2,7 +2,7 @@ package com.lingh;
 
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
+import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.images.builder.Transferable;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -14,8 +14,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,8 +34,10 @@ public class PrestoTest {
             )
             .withExposedPorts(8080)
             .waitingFor(
-                    new LogMessageWaitStrategy().withRegEx(".*======== SERVER STARTED ========.*")
-                            .withStartupTimeout(Duration.of(60, ChronoUnit.SECONDS))
+                    new HttpWaitStrategy()
+                            .forPath("/v1/info/state")
+                            .forPort(8080)
+                            .forResponsePredicate("\"ACTIVE\""::equals)
             );
 
     @Test
