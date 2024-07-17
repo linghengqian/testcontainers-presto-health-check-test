@@ -6,9 +6,11 @@ import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.images.builder.Transferable;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -35,9 +37,18 @@ public class PrestoTest {
             .withExposedPorts(8080)
             .waitingFor(
                     new HttpWaitStrategy()
-                            .forPath("/v1/info/state")
+                            .forPath("/v1/cluster")
                             .forPort(8080)
-                            .forResponsePredicate("\"ACTIVE\""::equals)
+                            .forResponsePredicate(anObject -> {
+                                try {
+                                    return new ObjectMapper()
+                                            .readTree(anObject)
+                                            .get("activeWorkers")
+                                            .asInt() > 0;
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            })
             );
 
     @Test

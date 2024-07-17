@@ -18,15 +18,15 @@ cd ./testcontainers-presto-health-check-test/
 
 ```bash
 $./mvnw clean test
-[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 9.923 s <<< FAILURE! -- in com.lingh.PrestoTest
-[ERROR] com.lingh.PrestoTest.test -- Time elapsed: 9.819 s <<< ERROR!
-java.sql.SQLException: Query failed (#20240716_152749_00000_pf2mr): Presto server is still initializing
+[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 9.917 s <<< FAILURE! -- in com.lingh.PrestoTest
+[ERROR] com.lingh.PrestoTest.test -- Time elapsed: 9.713 s <<< ERROR!
+java.sql.SQLException: Query failed (#20240717_030349_00000_nnbf6): Presto server is still initializing
         at com.facebook.presto.jdbc.PrestoResultSet.resultsException(PrestoResultSet.java:1841)
         at com.facebook.presto.jdbc.PrestoResultSet.getColumns(PrestoResultSet.java:1751)
         at com.facebook.presto.jdbc.PrestoResultSet.<init>(PrestoResultSet.java:121)
         at com.facebook.presto.jdbc.PrestoStatement.internalExecute(PrestoStatement.java:272)
         at com.facebook.presto.jdbc.PrestoStatement.execute(PrestoStatement.java:230)
-        at com.lingh.PrestoTest.test(PrestoTest.java:49)
+        at com.lingh.PrestoTest.test(PrestoTest.java:56)
         at java.base/java.lang.reflect.Method.invoke(Method.java:568)
         at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
         at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
@@ -43,19 +43,20 @@ Caused by: com.facebook.presto.spi.PrestoException: Presto server is still initi
         at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
         at java.base/java.lang.Thread.run(Thread.java:829)
 
+11:03:49.775 [Thread-5] DEBUG org.testcontainers.shaded.com.github.dockerjava.core.command.AbstrDockerCmd - Cmd: 0577e4d3761c3b9952afdc70a9bc4e881c07cb85df92b432e3db62b94bc58651,SIGTERM
 [INFO] 
 [INFO] Results:
 [INFO] 
 [ERROR] Errors: 
-[ERROR]   PrestoTest.test:49 » SQL Query failed (#20240716_152749_00000_pf2mr): Presto server is still initializing
+[ERROR]   PrestoTest.test:56 » SQL Query failed (#20240717_030349_00000_nnbf6): Presto server is still initializing
 [INFO] 
 [ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
 [INFO] 
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD FAILURE
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  11.849 s
-[INFO] Finished at: 2024-07-16T23:27:50+08:00
+[INFO] Total time:  12.237 s
+[INFO] Finished at: 2024-07-17T11:03:49+08:00
 [INFO] ------------------------------------------------------------------------
 [ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.2.5:test (default-test) on project testcontainers-presto-health-check-test: 
 [ERROR] 
@@ -68,5 +69,4 @@ Caused by: com.facebook.presto.spi.PrestoException: Presto server is still initi
 [ERROR] 
 [ERROR] For more information about the errors and possible solutions, please read the following articles:
 [ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
-
 ```
