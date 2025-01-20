@@ -2,15 +2,14 @@ package com.lingh;
 
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.images.builder.Transferable;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -29,26 +28,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class PrestoTest {
 
     @Container
-    public GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("prestodb/presto:0.288"))
+    public GenericContainer<?> container = new GenericContainer<>(DockerImageName.parse("prestodb/presto:0.290"))
             .withCopyFileToContainer(
                     MountableFile.forClasspathResource("default", Transferable.DEFAULT_DIR_MODE),
                     "/opt/presto-server/etc"
             )
             .withExposedPorts(8080)
             .waitingFor(
-                    new HttpWaitStrategy()
-                            .forPath("/v1/cluster")
-                            .forPort(8080)
-                            .forResponsePredicate(anObject -> {
-                                try {
-                                    return new ObjectMapper()
-                                            .readTree(anObject)
-                                            .get("activeWorkers")
-                                            .asInt() > 0;
-                                } catch (IOException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            })
+                    new WaitAllStrategy()
+                            .withStrategy(Wait.forLogMessage(".*======== SERVER STARTED ========.*", 1))
+                            .withStrategy(Wait.forHttp("/v1/info/state").forPort(8080).forResponsePredicate("\"ACTIVE\""::equals))
             );
 
     @Test
